@@ -13,3 +13,14 @@
  *= require_tree .
  *= require_self
  */
+
+
+html {
+  font-family: Verdana;
+}
+
+button {
+  background: red;
+  margin-left: 10px;
+  font-family: Verdana;
+}

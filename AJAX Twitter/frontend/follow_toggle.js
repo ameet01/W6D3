@@ -1,3 +1,5 @@
+const APIUtil = require('./api_util');
+
 class FollowToggle {
   
   constructor(el, options) {
@@ -12,39 +14,65 @@ class FollowToggle {
     if(this.followState === 'followed') {
       this.$el.prop('disabled', false);
       this.$el.html('Unfollow!');
-    } else {
+    } else if(this.followState === 'unfollowed') {
       this.$el.prop('disabled', false);
       this.$el.html('Follow!');
+    } else if(this.followState === 'following') {
+      this.$el.prop('disabled', true);
+      this.$el.html('following...');
+    } else if(this.followState === 'unfollowing') {
+      this.$el.prop('disabled', true);
+      this.$el.html('unfollowing...');
     }
   }
   
   handleClick(e) {
-    var self = this;
+    const self = this;
     
     e.preventDefault();
-    
-    if(self.followState === 'followed') {
+    if(this.followState === 'followed') {
+      self.followState = 'unfollowing';
       self.render();
-      $.ajax({
-        method: 'DELETE',
-        url: `/users/${self.userId}/follow`,
-        success: function(response) {
-          self.followState = 'unfollowed';
-          self.render();
-        }
+      
+      APIUtil.unfollowUser(this.userId).then(() => {
+        self.followState = 'unfollowed';
+        self.render();
       });
     }
-    if(self.followState === 'unfollowed') {
+    if(this.followState === 'unfollowed') {
+      self.followState = 'following';
       self.render();
-      $.ajax({
-        method: 'POST',
-        url: `/users/${self.userId}/follow`,
-        success: function(response) {
-          self.followState = 'followed';
-          self.render();
-        }
+      
+      APIUtil.followUser(this.userId).then(() => {
+        self.followState = 'followed';
+        self.render();
       });
     }
+    // if(self.followState === 'followed') {
+    //   self.render();
+    //   $.ajax({
+    //     method: 'DELETE',
+    //     url: `/users/${self.userId}/follow`,
+    //     dataType: 'JSON',
+    //     success: function(response) {
+    //       self.followState = 'unfollowed';
+    //       self.render();
+    //     }
+    //   });
+    // }
+    // 
+    // if(self.followState === 'unfollowed') {
+    //   self.render();
+    //   $.ajax({
+    //     method: 'POST',
+    //     url: `/users/${self.userId}/follow`,
+    //     dataType: 'JSON',
+    //     success: function(response) {
+    //       self.followState = 'followed';
+    //       self.render();
+    //     }
+    //   });
+    // }
   }
   
 }
