@@ -65,9 +65,52 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports) {
+
+const APIUtil = {
+  followUser: (id) => (
+    $.ajax({
+      method: 'POST',
+      url: `/users/${id}/follow`,
+      dataType: 'json',
+    })
+  ),
+
+  unfollowUser: (id) => (
+     $.ajax({
+      method: 'DELETE',
+      url: `/users/${id}/follow`,
+      dataType: 'json',
+    })
+  ),
+  
+  searchUsers: query => (
+    $.ajax({
+      url: '/users/search',
+      dataType: 'json',
+      method: 'GET',
+      data: { query }
+    })
+  ),
+  
+  createTweet: data => (
+    $.ajax({
+      url: '/tweets',
+      dataType: 'json',
+      method: 'POST',
+      data: { data }
+    })
+  ),
+  
+}
+
+module.exports = APIUtil;
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const APIUtil = __webpack_require__(1);
+const APIUtil = __webpack_require__(0);
 
 class FollowToggle {
   
@@ -150,53 +193,10 @@ class FollowToggle {
 module.exports = FollowToggle;
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports) {
-
-const APIUtil = {
-  followUser: (id) => (
-    $.ajax({
-      method: 'POST',
-      url: `/users/${id}/follow`,
-      dataType: 'json',
-    })
-  ),
-
-  unfollowUser: (id) => (
-     $.ajax({
-      method: 'DELETE',
-      url: `/users/${id}/follow`,
-      dataType: 'json',
-    })
-  ),
-  
-  searchUsers: query => (
-    $.ajax({
-      url: '/users/search',
-      dataType: 'json',
-      method: 'GET',
-      data: { query }
-    })
-  ),
-  
-  createTweet: data => (
-    $.ajax({
-      url: '/tweets',
-      dataType: 'json',
-      method: 'POST',
-      data: { data }
-    })
-  ),
-  
-}
-
-module.exports = APIUtil;
-
-/***/ }),
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const FollowToggle = __webpack_require__(0);
+const FollowToggle = __webpack_require__(1);
 const UsersSearch = __webpack_require__(3);
 const TweetCompose = __webpack_require__(4);
 
@@ -210,8 +210,8 @@ $(function() {
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const APIUtil = __webpack_require__(1);
-const FollowToggle = __webpack_require__(0);
+const APIUtil = __webpack_require__(0);
+const FollowToggle = __webpack_require__(1);
 
 class UsersSearch {
   constructor(el) {
@@ -257,7 +257,7 @@ module.exports = UsersSearch;
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const APIUtil = __webpack_require__(1);
+const APIUtil = __webpack_require__(0);
 
 class TweetCompose {
   constructor(el) {
@@ -276,7 +276,10 @@ class TweetCompose {
   }
   
   clearInput() {
-    this.$el.find(':input').empty();
+    this.$input.val('');
+    this.$mentionedUsersDiv.find('ul').empty();
+    this.$el.find(':input').prop('disabled', false);
+    this.$el.find('.char-left').empty();
   }
   
   handleSuccess() {

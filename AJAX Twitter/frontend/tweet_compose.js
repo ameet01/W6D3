@@ -17,7 +17,10 @@ class TweetCompose {
   }
   
   clearInput() {
-    this.$el.find(':input').empty();
+    this.$input.val('');
+    this.$mentionedUsersDiv.find('ul').empty();
+    this.$el.find(':input').prop('disabled', false);
+    this.$el.find('.char-left').empty();
   }
   
   handleSuccess() {
